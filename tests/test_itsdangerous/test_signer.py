@@ -101,6 +101,10 @@ class TestSigner:
         out = signer.unsign(signed)
         assert out == b"my string"
 
+    def test_empty_secret_keys(self):
+        with pytest.raises(ValueError, match="at least one"):
+            Signer([])
+
 
 def test_abstract_algorithm():
     alg = SigningAlgorithm()

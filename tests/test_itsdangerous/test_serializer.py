@@ -45,6 +45,10 @@ class TestSerializer:
     def value(self):
         return {"id": 42}
 
+    def test_empty_secret_keys(self):
+        with pytest.raises(ValueError, match="at least one"):
+            Serializer([])
+
     @pytest.mark.parametrize(
         "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
     )
