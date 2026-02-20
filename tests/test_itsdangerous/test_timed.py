@@ -113,3 +113,8 @@ class TestTimedSerializer(FreezeMixin, TestSerializer):
     def test_return_payload(self, serializer, value, ts):
         signed = serializer.dumps(value)
         assert serializer.loads(signed, return_timestamp=True) == (value, ts)
+
+    def test_positional_salt(self, serializer, value):
+        signed = serializer.dumps(value, salt="other")
+        assert serializer.loads(signed, "other") == value
+        assert serializer.loads_unsafe(signed, "other") == (True, value)

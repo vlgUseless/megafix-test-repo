@@ -179,15 +179,13 @@ class TimedSerializer(Serializer[_TSerialized]):
     ) -> cabc.Iterator[TimestampSigner]:
         return t.cast("cabc.Iterator[TimestampSigner]", super().iter_unsigners(salt))
 
-    # TODO: Signature is incompatible because parameters were added
-    #  before salt.
-
     def loads(  # type: ignore[override]
         self,
         s: str | bytes,
+        salt: str | bytes | None = None,
+        *,
         max_age: int | None = None,
         return_timestamp: bool = False,
-        salt: str | bytes | None = None,
     ) -> t.Any:
         """Reverse of :meth:`dumps`, raises :exc:`.BadSignature` if the
         signature validation fails. If a ``max_age`` is provided it will
@@ -196,6 +194,14 @@ class TimedSerializer(Serializer[_TSerialized]):
         raised. All arguments are forwarded to the signer's
         :meth:`~TimestampSigner.unsign` method.
         """
+        if (
+            max_age is None
+            and salt is not None
+            and not isinstance(salt, (str, bytes))
+        ):
+            max_age = t.cast(int, salt)
+            salt = None
+
         s = want_bytes(s)
         last_exception = None
 
@@ -219,10 +225,19 @@ class TimedSerializer(Serializer[_TSerialized]):
 
         raise t.cast(BadSignature, last_exception)
 
-    def loads_unsafe(  # type: ignore[override]
+    def loads_unsafe(
         self,
         s: str | bytes,
-        max_age: int | None = None,
         salt: str | bytes | None = None,
+        *,
+        max_age: int | None = None,
     ) -> tuple[bool, t.Any]:
+        if (
+            max_age is None
+            and salt is not None
+            and not isinstance(salt, (str, bytes))
+        ):
+            max_age = t.cast(int, salt)
+            salt = None
+
         return self._loads_unsafe_impl(s, salt, load_kwargs={"max_age": max_age})

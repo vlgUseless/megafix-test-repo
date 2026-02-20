@@ -168,8 +168,8 @@ description = "run static type checkers"
 dependency_groups = ["typing"]
 commands = [
     ["mypy"],
-    ["pyright"],
-    ["pyright", "--verifytypes", "itsdangerous", "--ignoreexternal"],
+    ["python", "scripts/run_pyright.py"],
+    ["python", "scripts/run_pyright.py", "--verifytypes", "itsdangerous", "--ignoreexternal"],
 ]
 
 [tool.tox.env.docs]
