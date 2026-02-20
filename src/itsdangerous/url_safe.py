@@ -49,6 +49,8 @@ class URLSafeSerializerMixin(Serializer[str]):
                     "Could not zlib decompress the payload before decoding the payload",
                     original_error=e,
                 ) from e
+        if serializer is not None:
+            args = (serializer, *args)
 
         return super().load_payload(json, *args, **kwargs)
 
